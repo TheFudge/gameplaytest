@@ -1,151 +1,161 @@
 ﻿using UnityEngine;
-using UnityEngine.Analytics;
 
-public class Character : MonoBehaviour
+namespace Game
 {
-    [SerializeField]
-    private Animator animator;
-    [SerializeField]
-    private Rigidbody2D rigidbody;
-
-    public enum PlayerMovementType
+    public class Character : MonoBehaviour
     {
-        MoveLeft, MoveRight, Run, Jump
-    }
+        [SerializeField] private Animator characterAnimator;
+        [SerializeField] private Rigidbody2D characterRigidBody;
 
-    public int movementDirection = 0;
-    private Vector2 currentMovement = Vector2.zero;
-    public bool isRunning = false;
-    public bool isGrounded = false;
+        public int movementDirection = 0;
+        private Vector2 currentMovement = Vector2.zero;
+        public bool isRunning = false;
+        public bool isGrounded = false;
 
-    private AnimationCurve jumpBehaviour;
-    private float jumpTime = 0f;
-    
-    [SerializeField] private float moveSpeed = 1f, runSpeed = 2f, jumpForce = 30f;
-    [SerializeField] private float minimumFallingVelocity = 0.1f;
-    [SerializeField] private float maximumGroundedHeight = 0.1f;
+        private AnimationCurve jumpBehaviour;
+        private float jumpTime = 0f;
+
+        [SerializeField] private float moveSpeed = 1f, runSpeed = 2f, jumpForce = 30f;
+        [SerializeField] private float maximumGroundedHeight = 0.1f;
 
 
-    [SerializeField] private bool stopSlideWhenIdle = true;
-    [SerializeField] private bool canControlMovementInAir = false;
-    [SerializeField] private bool canRunWhenNotGrounded = false;
-    [SerializeField] private bool canJumpWhenNotGrounded = false;
+        [SerializeField] private bool stopSlideWhenIdle = true;
+        [SerializeField] private bool canControlMovementInAir = false;
+        [SerializeField] private bool canRunWhenNotGrounded = false;
+        [SerializeField] private bool canJumpWhenNotGrounded = false;
+        [SerializeField] private bool smoothMovementChange = false;
+        [SerializeField] private float movementChangeSpeed = 2f;
 
-    [SerializeField] private LayerMask worldLayer;
-    
-    void Update()
-    {
-        CheckGrounded();
+        [SerializeField] private LayerMask worldLayer;
         
-        if (movementDirection != 0 || stopSlideWhenIdle)
-        {
-            // stop slide will override the velocity value even when the player does not move.
-            DoMove();
-        }
-    }
+        private static readonly int animationKeySpeed = Animator.StringToHash("Speed");
+        private static readonly int animationKeyDirection = Animator.StringToHash("Direction");
+        private static readonly int animationKeyVerticalVelocity = Animator.StringToHash("VerticalVelocity");
 
-    private void CalculateNewSpeed()
-    {
-        // leave the movenet if player can not control the movement while in the air.
-        if (!isGrounded && !canControlMovementInAir)
-            return;
-        
-        if (isRunning && ((!isGrounded && canRunWhenNotGrounded) || isGrounded))
+        void Update()
         {
-            currentMovement.x = runSpeed * movementDirection;
-        }
-        else
-        {
-            currentMovement.x = moveSpeed * movementDirection;
-        }
-    }
-
-    private float GetAnimatorSpeed()
-    {
-        if (isRunning)
-        {
-            return 2f * movementDirection;
-        }
-        else
-        {
-            return movementDirection;
-        }
-    }
-
-    private void DoJump()
-    {
-        if (!canJumpWhenNotGrounded && !isGrounded)
-            return;
-        
-        rigidbody.AddForce(Vector2.up * jumpForce);
-        animator.SetTrigger("DoJump");
-    }
-
-    private void DoMove()
-    {
-        // move character to left or right with the specified speed
-        Vector2 velocity = rigidbody.velocity;
-        velocity.x = currentMovement.x;
-        rigidbody.velocity = velocity;
-
-        // set animations to make a cooler character.
-        animator.SetFloat("Speed", Mathf.Abs(GetAnimatorSpeed()));
-        animator.SetFloat("Direction", GetAnimatorSpeed());
-        animator.SetFloat("VerticalVelocity", rigidbody.velocity.y);
-    }
-
-    private void CheckGrounded()
-    {
-        RaycastHit2D hitEvent = Physics2D.Raycast(transform.position, Vector2.down, maximumGroundedHeight, worldLayer);
-        if (hitEvent.collider == null && isGrounded)
-        {
-            isGrounded = false;
+            CheckGrounded();
+            
             CalculateNewSpeed();
-        }
-        else if (!isGrounded)
-        {
-            isGrounded = true;
-            CalculateNewSpeed();
-        }
-    }
-
-    public void MovementStarted(PlayerMovementType movementType)
-    {
-        switch (movementType)
-        {
-            case PlayerMovementType.MoveLeft:
-                movementDirection = -1;
-                break;
-            case PlayerMovementType.MoveRight:
-                movementDirection = 1;
-                break;
-            case PlayerMovementType.Run:
-                isRunning = true;
-                break;
-            case PlayerMovementType.Jump:
-                DoJump();
-                break;
+            
+            if (movementDirection != 0 || stopSlideWhenIdle)
+            {
+                // stop slide will override the velocity value even when the player does not move.
+                DoMove();
+            }
         }
 
-        CalculateNewSpeed();
-    }
-    
-    public void MovementStopped(PlayerMovementType movementType)
-    {
-        switch (movementType)
+        private void CalculateNewSpeed()
         {
-            case PlayerMovementType.MoveLeft:
-                if (movementDirection == -1)
-                    movementDirection = 0;
-                break;
-            case PlayerMovementType.MoveRight:
-                if (movementDirection == 1)
-                    movementDirection = 0;
-                break;
-            case PlayerMovementType.Run:
-                isRunning = false;
-                break;
+            // leave the movenet if player can not control the movement while in the air.
+            if (!isGrounded && !canControlMovementInAir)
+                return;
+
+            float newSpeed = 0f;
+            
+            if (isRunning && ((!isGrounded && canRunWhenNotGrounded) || isGrounded))
+            {
+                newSpeed = runSpeed * movementDirection;
+            }
+            else
+            {
+                newSpeed = moveSpeed * movementDirection;
+            }
+
+            if (smoothMovementChange)
+            {
+                currentMovement.x = Mathf.Lerp(currentMovement.x , newSpeed, movementChangeSpeed * Time.deltaTime);
+            }
+            else
+            {
+                currentMovement.x = newSpeed;
+            }
         }
-        CalculateNewSpeed();
+
+        private float GetAnimatorSpeed()
+        {
+            if (isRunning)
+            {
+                return 2f * movementDirection;
+            }
+            else
+            {
+                return movementDirection;
+            }
+        }
+
+        private void DoJump()
+        {
+            if (!canJumpWhenNotGrounded && !isGrounded)
+                return;
+
+            characterRigidBody.AddForce(Vector2.up * jumpForce);
+        }
+
+        private void DoMove()
+        {
+           
+            // move character to left or right with the specified speed
+            Vector2 velocity = characterRigidBody.velocity;
+            velocity.x = currentMovement.x;
+            characterRigidBody.velocity = velocity;
+
+            // set animations to make a cooler character.
+            characterAnimator.SetFloat(animationKeySpeed, Mathf.Abs(GetAnimatorSpeed()));
+            characterAnimator.SetFloat(animationKeyDirection, GetAnimatorSpeed());
+            // character should never fall or jump (in the animation) if the character is grounded.
+            characterAnimator.SetFloat(animationKeyVerticalVelocity, isGrounded ? 0f : characterRigidBody.velocity.y);
+        }
+
+        private void CheckGrounded()
+        {
+            RaycastHit2D hitEvent =
+                Physics2D.Raycast(transform.position, Vector2.down, maximumGroundedHeight, worldLayer);
+            if (hitEvent.collider == null)
+            {
+                isGrounded = false;
+            }
+            else
+            {
+                isGrounded = true;
+            }
+        }
+
+        public void MovementStarted(CharacterMovementType movementType)
+        {
+            switch (movementType)
+            {
+                case CharacterMovementType.MoveLeft:
+                    movementDirection = -1;
+                    break;
+                case CharacterMovementType.MoveRight:
+                    movementDirection = 1;
+                    break;
+                case CharacterMovementType.Run:
+                    isRunning = true;
+                    break;
+                case CharacterMovementType.Jump:
+                    DoJump();
+                    break;
+            }
+        }
+
+        public void MovementStopped(CharacterMovementType movementType)
+        {
+            switch (movementType)
+            {
+                case CharacterMovementType.MoveLeft:
+                    if (movementDirection == -1)
+                        movementDirection = 0;
+                    break;
+                case CharacterMovementType.MoveRight:
+                    if (movementDirection == 1)
+                        movementDirection = 0;
+                    break;
+                case CharacterMovementType.Run:
+                    isRunning = false;
+                    break;
+            }
+        }
     }
 }

@@ -146,20 +146,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2664661f97a376c48bd882dfab4616a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 4878228180942759550}
-  rigidbody: {fileID: 4878228181149833020}
+  characterAnimator: {fileID: 4878228180942759550}
+  characterRigidBody: {fileID: 4878228181149833020}
   movementDirection: 0
   isRunning: 0
   isGrounded: 0
   moveSpeed: 1
   runSpeed: 2
   jumpForce: 200
-  minimumFallingVelocity: 0.1
-  maximumGroundedHeight: 0.5
+  maximumGroundedHeight: 0.2
   stopSlideWhenIdle: 1
   canControlMovementInAir: 0
   canRunWhenNotGrounded: 0
   canJumpWhenNotGrounded: 0
+  smoothMovementChange: 0
+  movementChangeSpeed: 2
   worldLayer:
     serializedVersion: 2
     m_Bits: 256

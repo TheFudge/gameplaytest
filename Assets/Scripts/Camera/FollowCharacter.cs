@@ -1,66 +1,68 @@
 ﻿using UnityEngine;
 
-public class FollowCharacter : MonoBehaviour
+namespace Game
 {
-    [SerializeField]
-    private Transform targetToFollow;
-    private bool followingTarget = false;
-
-    [SerializeField]
-    private bool lerpToObject = true;
-    [Range(0f, 20f)]
-    [SerializeField]
-    private float lerpSpeed = 4f;
-    
-    [SerializeField]
-    private Vector3 cameraOffset = Vector3.zero;
-
-    private float cameraZPosition = -10f;
-    
-    void Start()
+    public class FollowCharacter : MonoBehaviour
     {
-        followingTarget = targetToFollow != null;
-    }
+        [SerializeField] private Transform targetToFollow;
+        private bool followingTarget = false;
 
-    public void Follow(Transform target)
-    {
-        targetToFollow = target;
-        followingTarget = true;
-    }
+        [SerializeField] private bool lerpToObject = true;
+        [Range(0f, 20f)] [SerializeField] private float lerpSpeed = 4f;
 
-    public void StopFollowing(Transform target)
-    {
-        if (targetToFollow == target)
-            return;
-        targetToFollow = null;
-        followingTarget = false;
-    }
+        [SerializeField] private Vector3 cameraOffset = Vector3.zero;
 
-    void LateUpdate()
-    {
-        if (!followingTarget)
-            return;
+        private float cameraZPosition = -10f;
+        private Vector3 cameraPosition;
         
-        if (lerpToObject)
+        void Start()
         {
-            DoLerpedFollow();
+            followingTarget = targetToFollow != null;
         }
-        else
+
+        public void Follow(Transform target)
         {
-            DoHardFollow();
+            targetToFollow = target;
+            followingTarget = true;
         }
-    }
 
-    void DoLerpedFollow()
-    {
-        Vector3 pos = Vector3.Lerp(transform.position, targetToFollow.position + cameraOffset, Time.deltaTime * lerpSpeed);
-        pos.z = cameraZPosition;
-        transform.position = pos;
+        public void StopFollowing(Transform target)
+        {
+            if (targetToFollow == target)
+                return;
+            targetToFollow = null;
+            followingTarget = false;
+        }
 
-    }
+        void LateUpdate()
+        {
+            if (!followingTarget)
+                return;
 
-    void DoHardFollow()
-    {
-        transform.position = targetToFollow.position + cameraOffset;
+            if (lerpToObject)
+            {
+                DoLerpedFollow();
+            }
+            else
+            {
+                DoHardFollow();
+            }
+        }
+
+        void DoLerpedFollow()
+        {
+            cameraPosition = Vector3.Lerp(transform.position, targetToFollow.position + cameraOffset,
+                Time.deltaTime * lerpSpeed);
+            cameraPosition.z = cameraZPosition;
+            transform.position = cameraPosition;
+
+        }
+
+        void DoHardFollow()
+        {
+            cameraPosition = targetToFollow.position + cameraOffset;
+            cameraPosition.z = cameraZPosition;
+            transform.position = cameraPosition;
+        }
     }
 }
