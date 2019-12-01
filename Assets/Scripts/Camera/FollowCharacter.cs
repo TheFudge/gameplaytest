@@ -5,28 +5,29 @@ namespace Game
     public class FollowCharacter : MonoBehaviour
     {
         [SerializeField] private Transform targetToFollow;
-        private bool followingTarget = false;
-
+        
+        [SerializeField] private Vector3 cameraOffset = Vector3.zero;
+        
         [SerializeField] private bool lerpToObject = true;
         [Range(0f, 20f)] [SerializeField] private float lerpSpeed = 4f;
 
-        [SerializeField] private Vector3 cameraOffset = Vector3.zero;
-
+        
         private float cameraZPosition = -10f;
         private Vector3 cameraPosition;
+        private bool followingTarget = false;
         
         void Start()
         {
             followingTarget = targetToFollow != null;
         }
 
-        public void Follow(Transform target)
+        public void FolloTarget(Transform target)
         {
             targetToFollow = target;
             followingTarget = true;
         }
 
-        public void StopFollowing(Transform target)
+        public void StopFollowingTarget(Transform target)
         {
             if (targetToFollow == target)
                 return;
@@ -34,7 +35,12 @@ namespace Game
             followingTarget = false;
         }
 
-        void LateUpdate()
+        public void SetOffset(Vector3 newOffset)
+        {
+            cameraOffset = newOffset;
+        }
+
+        private void LateUpdate()
         {
             if (!followingTarget)
                 return;

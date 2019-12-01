@@ -4,8 +4,7 @@ namespace Game
 {
     public class CharacterInput : MonoBehaviour
     {
-        [SerializeField] private Character character;
-
+        [SerializeField] private Character character = null;
 
         [SerializeField] private KeyCode
             keyToRun = KeyCode.LeftShift,
@@ -15,6 +14,8 @@ namespace Game
 
         void Update()
         {
+            // Why seperate?
+            // Input code should not be in character class, because we could make a game controller input class and enable the input classes on runtime without destroying readablility of the character class:
             CheckPlayerMoving();
 
             CheckPlayerRunning();
