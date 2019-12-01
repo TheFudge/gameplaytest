@@ -31,18 +31,28 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: e2d790db8dbe7a74184c72117f94f5c5, type: 3}
-    - {fileID: 102900000, guid: b66e2e49f676d12468e08e2257121d8a, type: 3}
-    totalSpriteSurfaceArea: 132096
+    - {fileID: 102900000, guid: b7546f23ec50a4445a84c7ace2e385e4, type: 3}
+    totalSpriteSurfaceArea: 5141
     bindAsDefault: 1
     storedHash:
       serializedVersion: 2
-      Hash: 00000000000000000000000000000000
+      Hash: 793c019e6287eb866a3ef17f713308cd
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 51e21762593c8c6458a40751be445c90, type: 3}
-  - {fileID: 21300000, guid: c15d04cf93d139f4899ef1cb5892c4f6, type: 3}
+  - {fileID: 21300000, guid: ae40ccb2eb09fcd4b9292b341f4a12bc, type: 3}
+  - {fileID: 21300000, guid: d1b458d553c40304fa495594aaee2bb6, type: 3}
+  - {fileID: 21300000, guid: 6571a2874094c6c4bbe9397c9dd40d7c, type: 3}
+  - {fileID: 21300000, guid: 872cc63c2f5c98a4ebd158af4039a146, type: 3}
+  - {fileID: 21300000, guid: 0e93cb4d29ed1e04cadb82910fe8ac30, type: 3}
+  - {fileID: 21300000, guid: 6f0cf86fe2d9cf44dbd1095060ad5259, type: 3}
   m_PackedSpriteNamesToIndex:
   - White
-  - Character_Idle
+  - run
+  - landing
+  - mid air
+  - jump
+  - idle
+  - ledge grab
   m_Tag: GeneralAtlas
   m_IsVariant: 0
