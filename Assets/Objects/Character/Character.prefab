@@ -148,7 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterAnimator: {fileID: 4878228180942759550}
   characterRigidBody: {fileID: 4878228181149833020}
-  worldLayer:
+  groundHitLayerMask:
     serializedVersion: 2
     m_Bits: 256
   moveSpeed: 1
@@ -161,7 +161,6 @@ MonoBehaviour:
   canJumpWhenNotGrounded: 0
   smoothMovementChange: 0
   movementChangeSpeed: 2
-  isGrounded: 0
 --- !u!114 &4878228181149833021
 MonoBehaviour:
   m_ObjectHideFlags: 0
