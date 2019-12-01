@@ -1,5 +1,7 @@
 # gameplaytest
 
+Unity Version: 2018.4.13f1
+
 Ich habe versucht den Character so erweiterbar wie möglich zu bauen, ohne zu viel Zeit in die Programmierung reinzu stecken.
 Daher habe ich mich gegen Ende auch für einen weiteren Enum entschieden, damit man neue Bewegungsarten wie z.B. Schleichen einfach einbauen kann.
 
