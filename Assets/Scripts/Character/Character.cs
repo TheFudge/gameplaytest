@@ -15,22 +15,35 @@ namespace Game
         [SerializeField] private float jumpForce = 30f;
         [SerializeField] private float maximumGroundedHeight = 0.1f;
 
-        [SerializeField] private bool stopSlideWhenIdle = true;
+        [Tooltip("Whether the player should slide down a ramp or not.")]
+        [SerializeField] private bool enableSlideDownRamps = true;
+        [Tooltip("Whether the player can change the direction and speed he is falling.")]
         [SerializeField] private bool canControlMovementInAir = false;
+        [Tooltip("Whether The player can change the speed to run in the air.")]
         [SerializeField] private bool canRunWhenNotGrounded = false;
+        [Tooltip("Whether the character can jump again when flying in the air (DoubleJump)")]
         [SerializeField] private bool canJumpWhenNotGrounded = false;
         
         
-        [Header("Smooth Movement")]
+        [Header("Smooth Movement")] [Tooltip("Wether the speed should change instantly or over time.")]
         [SerializeField] private bool smoothMovementChange = false;
         [SerializeField] private float movementChangeSpeed = 2f;
 
-        private CharacterMoveSpeedType moveType = CharacterMoveSpeedType.Standing;
+        private CharacterMoveSpeedType moveType = CharacterMoveSpeedType.Walk;
         // This would probably be useful to other scripts, so I decided to make it public.
-        public CharacterMoveSpeedType MoveType => moveType;
-        
+        public CharacterMoveSpeedType MoveType
+        {
+            get
+            {
+                if (movementDirection == 0)
+                    return CharacterMoveSpeedType.Idle;
+                return moveType;
+            }
+        }
+
         private Vector2 currentMovement = Vector2.zero;
         private int movementDirection = 0;
+        private float movementInputSpeed = 1f;
         private bool isGrounded = false;
         
         private static readonly int animationKeySpeed = Animator.StringToHash("Speed");
@@ -43,7 +56,7 @@ namespace Game
             
             CalculateNewSpeed();
             
-            if (movementDirection != 0 || stopSlideWhenIdle)
+            if (movementDirection != 0 || enableSlideDownRamps)
             {
                 // stop slide will override the velocity value even when the player does not move.
                 DoMove();
@@ -62,16 +75,13 @@ namespace Game
 
             switch (moveType)
             {
-                case CharacterMoveSpeedType.Standing:
-                    newSpeed = 0f;
-                    break;
                 case CharacterMoveSpeedType.Walk:
-                    newSpeed = moveSpeed * movementDirection;
+                    newSpeed = moveSpeed * movementDirection * movementInputSpeed;
                     break;
                 case CharacterMoveSpeedType.Run:
                     if (!isGrounded && canRunWhenNotGrounded || isGrounded)
                     {
-                        newSpeed = runSpeed * movementDirection;
+                        newSpeed = runSpeed * movementDirection * movementInputSpeed;
                     }
                     break;
             }
@@ -126,19 +136,26 @@ namespace Game
             }
         }
 
-        public void MovementStarted(CharacterMoveActionType moveActionType)
+        /// <summary>
+        /// Trigger A new movement.
+        /// </summary>
+        /// <param name="moveActionType">The type of the movement action.</param>
+        /// <param name="intensity">The intensity of the movement ranging vom zero to one.</param>
+        public void MovementStarted(CharacterMoveActionType moveActionType, float intensity = 1f)
         {
             switch (moveActionType)
             {
                 case CharacterMoveActionType.MoveLeft:
-                    if (moveType == CharacterMoveSpeedType.Standing)
+                    if (movementDirection == 0)
                         moveType = CharacterMoveSpeedType.Walk;
+                    movementInputSpeed = intensity;
                     movementDirection = -1;
                     break;
                 case CharacterMoveActionType.MoveRight:
-                    if (moveType == CharacterMoveSpeedType.Standing)
+                    if (movementDirection == 0)
                         moveType = CharacterMoveSpeedType.Walk;
                     movementDirection = 1;
+                    movementInputSpeed = intensity;
                     break;
                 case CharacterMoveActionType.Run:
                     moveType = CharacterMoveSpeedType.Run;
@@ -149,30 +166,30 @@ namespace Game
             }
         }
 
+        /// <summary>
+        /// Stop a movement action.
+        /// </summary>
+        /// <param name="moveActionType"></param>
         public void MovementStopped(CharacterMoveActionType moveActionType)
         {
             switch (moveActionType)
             {
                 case CharacterMoveActionType.MoveLeft:
-                    if (movementDirection == -1)
+                    if (movementDirection < 0f)
                     {
                         movementDirection = 0;
-                        moveType = CharacterMoveSpeedType.Standing;
                     }
                     break;
                 case CharacterMoveActionType.MoveRight:
-                    if (movementDirection == 1)
+                    if (movementDirection > 0f)
                     {
                         movementDirection = 0;
-                        moveType = CharacterMoveSpeedType.Standing;
                     }
 
                     break;
                 case CharacterMoveActionType.Run:
-                    if (movementDirection != 0)
+                    if (moveType == CharacterMoveSpeedType.Run)
                         moveType = CharacterMoveSpeedType.Walk;    
-                    else 
-                        moveType = CharacterMoveSpeedType.Standing;
                     
                     break;
             }
@@ -182,7 +199,6 @@ namespace Game
         {
             switch (moveType)
             {
-                case CharacterMoveSpeedType.Standing:
                 case CharacterMoveSpeedType.Walk:
                     return movementDirection;
                 case CharacterMoveSpeedType.Run:
