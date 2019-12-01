@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4878228180942759551}
   - component: {fileID: 4878228180942759550}
   m_Layer: 0
-  m_Name: ChracterAnimation
+  m_Name: CharacterAnimation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 4878228180942759536}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4878228181149833019}
   m_RootOrder: 0
@@ -69,7 +69,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c15d04cf93d139f4899ef1cb5892c4f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0e93cb4d29ed1e04cadb82910fe8ac30, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -151,11 +151,11 @@ MonoBehaviour:
   movementDirection: 0
   isRunning: 0
   isGrounded: 0
-  moveSpeed: 10
-  runSpeed: 20
-  jumpForce: 1500
+  moveSpeed: 1
+  runSpeed: 2
+  jumpForce: 200
   minimumFallingVelocity: 0.1
-  maximumGroundedHeight: 1
+  maximumGroundedHeight: 0.5
   stopSlideWhenIdle: 1
   canControlMovementInAir: 0
   canRunWhenNotGrounded: 0
@@ -192,10 +192,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 2
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 4
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -214,6 +214,6 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 2.25}
-  m_Size: {x: 1.18, y: 4.5}
+  m_Offset: {x: 0, y: 0.16101146}
+  m_Size: {x: 0.15963708, y: 0.3227601}
   m_Direction: 0

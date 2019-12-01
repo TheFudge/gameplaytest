@@ -89,20 +89,23 @@ public class Character : MonoBehaviour
         rigidbody.velocity = velocity;
 
         // set animations to make a cooler character.
-        animator.SetFloat("Speed", GetAnimatorSpeed());
+        animator.SetFloat("Speed", Mathf.Abs(GetAnimatorSpeed()));
+        animator.SetFloat("Direction", GetAnimatorSpeed());
         animator.SetFloat("VerticalVelocity", rigidbody.velocity.y);
     }
 
     private void CheckGrounded()
     {
         RaycastHit2D hitEvent = Physics2D.Raycast(transform.position, Vector2.down, maximumGroundedHeight, worldLayer);
-        if (hitEvent.collider == null)
+        if (hitEvent.collider == null && isGrounded)
         {
             isGrounded = false;
+            CalculateNewSpeed();
         }
-        else
+        else if (!isGrounded)
         {
             isGrounded = true;
+            CalculateNewSpeed();
         }
     }
 
