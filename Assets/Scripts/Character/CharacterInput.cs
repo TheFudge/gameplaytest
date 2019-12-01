@@ -14,8 +14,9 @@ namespace Game
 
         void Update()
         {
-            // Why seperate?
+            // Why seperate class?
             // Input code should not be in character class, because we could make a game controller input class and enable the input classes on runtime without destroying readablility of the character class:
+            
             CheckPlayerMoving();
 
             CheckPlayerRunning();

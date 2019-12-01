@@ -50,6 +50,8 @@ namespace Game
         private static readonly int animationKeyDirection = Animator.StringToHash("Direction");
         private static readonly int animationKeyVerticalVelocity = Animator.StringToHash("VerticalVelocity");
 
+        
+        
         void Update()
         {
             CheckGrounded();
@@ -65,6 +67,7 @@ namespace Game
             UpdateAnimation();
         }
 
+        
         private void CalculateNewSpeed()
         {
             // leave the movement if player can not control the movement while in the air.
@@ -97,6 +100,7 @@ namespace Game
         }
 
         
+        
         private void DoJump()
         {
             if (!canJumpWhenNotGrounded && !isGrounded)
@@ -113,6 +117,8 @@ namespace Game
             characterRigidBody.velocity = velocity;
         }
 
+        
+        
         private void UpdateAnimation()
         {
             characterAnimator.SetFloat(animationKeySpeed, Mathf.Abs(GetAnimatorSpeed()));
@@ -121,21 +127,32 @@ namespace Game
             characterAnimator.SetFloat(animationKeyVerticalVelocity, isGrounded ? 0f : characterRigidBody.velocity.y);
         }
 
+        
         private void CheckGrounded()
         {
             RaycastHit2D hitEvent = Physics2D.Raycast(transform.position, Vector2.down, maximumGroundedHeight, groundHitLayerMask);
             // check to zero seems to be pretty accurate and ist faster than a collider zero check.
             // if value is not exactly zero, than there will be a hit.
-            if (hitEvent.distance == 0f) 
+            isGrounded = hitEvent.distance != 0f;
+        }
+        
+        
+        private float GetAnimatorSpeed()
+        {
+            switch (moveType)
             {
-                isGrounded = false;
-            }
-            else
-            {
-                isGrounded = true;
+                case CharacterMoveSpeedType.Walk:
+                    return movementDirection;
+                
+                case CharacterMoveSpeedType.Run:
+                    return 2f * movementDirection;
+                
+                default:
+                    return 0f;
             }
         }
-
+        
+        
         /// <summary>
         /// Trigger A new movement.
         /// </summary>
@@ -146,20 +163,19 @@ namespace Game
             switch (moveActionType)
             {
                 case CharacterMoveActionType.MoveLeft:
-                    if (movementDirection == 0)
-                        moveType = CharacterMoveSpeedType.Walk;
                     movementInputSpeed = intensity;
                     movementDirection = -1;
                     break;
+                
                 case CharacterMoveActionType.MoveRight:
-                    if (movementDirection == 0)
-                        moveType = CharacterMoveSpeedType.Walk;
                     movementDirection = 1;
                     movementInputSpeed = intensity;
                     break;
+                
                 case CharacterMoveActionType.Run:
                     moveType = CharacterMoveSpeedType.Run;
                     break;
+                
                 case CharacterMoveActionType.Jump:
                     DoJump();
                     break;
@@ -176,35 +192,19 @@ namespace Game
             {
                 case CharacterMoveActionType.MoveLeft:
                     if (movementDirection < 0f)
-                    {
                         movementDirection = 0;
-                    }
                     break;
+                
                 case CharacterMoveActionType.MoveRight:
                     if (movementDirection > 0f)
-                    {
                         movementDirection = 0;
-                    }
-
                     break;
+                
                 case CharacterMoveActionType.Run:
                     if (moveType == CharacterMoveSpeedType.Run)
                         moveType = CharacterMoveSpeedType.Walk;    
                     
                     break;
-            }
-        }
-        
-        private float GetAnimatorSpeed()
-        {
-            switch (moveType)
-            {
-                case CharacterMoveSpeedType.Walk:
-                    return movementDirection;
-                case CharacterMoveSpeedType.Run:
-                    return 2f * movementDirection;
-                default:
-                    return 0f;
             }
         }
     }
