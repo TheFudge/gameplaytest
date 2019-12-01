@@ -96,6 +96,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetToFollow: {fileID: 0}
+  cameraOffset: {x: 0, y: 0.1, z: 0}
   lerpToObject: 1
   lerpSpeed: 3.09
-  cameraOffset: {x: 0.2, y: 0.1, z: 0}

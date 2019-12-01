@@ -26,7 +26,7 @@ namespace Game
         {
             if (Input.GetKeyDown(keyToJump))
             {
-                character.MovementStarted(CharacterMovementType.Jump);
+                character.MovementStarted(CharacterMoveActionType.Jump);
             }
         }
 
@@ -34,11 +34,11 @@ namespace Game
         {
             if (Input.GetKeyDown(keyToRun))
             {
-                character.MovementStarted(CharacterMovementType.Run);
+                character.MovementStarted(CharacterMoveActionType.Run);
             }
             else if (Input.GetKeyUp(keyToRun))
             {
-                character.MovementStopped(CharacterMovementType.Run);
+                character.MovementStopped(CharacterMoveActionType.Run);
             }
         }
 
@@ -46,20 +46,20 @@ namespace Game
         {
             if (Input.GetKeyDown(keyToGoLeft))
             {
-                character.MovementStarted(CharacterMovementType.MoveLeft);
+                character.MovementStarted(CharacterMoveActionType.MoveLeft);
             }
             else if (Input.GetKeyUp(keyToGoLeft))
             {
-                character.MovementStopped(CharacterMovementType.MoveLeft);
+                character.MovementStopped(CharacterMoveActionType.MoveLeft);
             }
 
             if (Input.GetKeyDown(keyToGoRight))
             {
-                character.MovementStarted(CharacterMovementType.MoveRight);
+                character.MovementStarted(CharacterMoveActionType.MoveRight);
             }
             else if (Input.GetKeyUp(keyToGoRight))
             {
-                character.MovementStopped(CharacterMovementType.MoveRight);
+                character.MovementStopped(CharacterMoveActionType.MoveRight);
             }
         }
     }

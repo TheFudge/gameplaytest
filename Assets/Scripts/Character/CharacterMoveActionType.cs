@@ -1,6 +1,6 @@
 namespace Game
 {
-    public enum CharacterMovementType
+    public enum CharacterMoveActionType
     {
         MoveLeft, MoveRight, Run, Jump
     }

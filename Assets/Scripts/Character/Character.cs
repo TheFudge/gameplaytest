@@ -25,9 +25,12 @@ namespace Game
         [SerializeField] private bool smoothMovementChange = false;
         [SerializeField] private float movementChangeSpeed = 2f;
 
+        private CharacterMoveSpeedType moveType = CharacterMoveSpeedType.Standing;
+        // This would probably be useful to other scripts, so I decided to make it public.
+        public CharacterMoveSpeedType MoveType => moveType;
+        
         private Vector2 currentMovement = Vector2.zero;
         private int movementDirection = 0;
-        private bool isRunning = false;
         private bool isGrounded = false;
         
         private static readonly int animationKeySpeed = Animator.StringToHash("Speed");
@@ -56,16 +59,23 @@ namespace Game
                 return;
 
             float newSpeed = 0f;
-            
-            if (isRunning && ((!isGrounded && canRunWhenNotGrounded) || isGrounded))
-            {
-                newSpeed = runSpeed * movementDirection;
-            }
-            else
-            {
-                newSpeed = moveSpeed * movementDirection;
-            }
 
+            switch (moveType)
+            {
+                case CharacterMoveSpeedType.Standing:
+                    newSpeed = 0f;
+                    break;
+                case CharacterMoveSpeedType.Walk:
+                    newSpeed = moveSpeed * movementDirection;
+                    break;
+                case CharacterMoveSpeedType.Run:
+                    if (!isGrounded && canRunWhenNotGrounded || isGrounded)
+                    {
+                        newSpeed = runSpeed * movementDirection;
+                    }
+                    break;
+            }
+            
             if (smoothMovementChange)
             {
                 currentMovement.x = Mathf.Lerp(currentMovement.x , newSpeed, movementChangeSpeed * Time.deltaTime);
@@ -116,52 +126,69 @@ namespace Game
             }
         }
 
-        public void MovementStarted(CharacterMovementType movementType)
+        public void MovementStarted(CharacterMoveActionType moveActionType)
         {
-            switch (movementType)
+            switch (moveActionType)
             {
-                case CharacterMovementType.MoveLeft:
+                case CharacterMoveActionType.MoveLeft:
+                    if (moveType == CharacterMoveSpeedType.Standing)
+                        moveType = CharacterMoveSpeedType.Walk;
                     movementDirection = -1;
                     break;
-                case CharacterMovementType.MoveRight:
+                case CharacterMoveActionType.MoveRight:
+                    if (moveType == CharacterMoveSpeedType.Standing)
+                        moveType = CharacterMoveSpeedType.Walk;
                     movementDirection = 1;
                     break;
-                case CharacterMovementType.Run:
-                    isRunning = true;
+                case CharacterMoveActionType.Run:
+                    moveType = CharacterMoveSpeedType.Run;
                     break;
-                case CharacterMovementType.Jump:
+                case CharacterMoveActionType.Jump:
                     DoJump();
                     break;
             }
         }
 
-        public void MovementStopped(CharacterMovementType movementType)
+        public void MovementStopped(CharacterMoveActionType moveActionType)
         {
-            switch (movementType)
+            switch (moveActionType)
             {
-                case CharacterMovementType.MoveLeft:
+                case CharacterMoveActionType.MoveLeft:
                     if (movementDirection == -1)
+                    {
                         movementDirection = 0;
+                        moveType = CharacterMoveSpeedType.Standing;
+                    }
                     break;
-                case CharacterMovementType.MoveRight:
+                case CharacterMoveActionType.MoveRight:
                     if (movementDirection == 1)
+                    {
                         movementDirection = 0;
+                        moveType = CharacterMoveSpeedType.Standing;
+                    }
+
                     break;
-                case CharacterMovementType.Run:
-                    isRunning = false;
+                case CharacterMoveActionType.Run:
+                    if (movementDirection != 0)
+                        moveType = CharacterMoveSpeedType.Walk;    
+                    else 
+                        moveType = CharacterMoveSpeedType.Standing;
+                    
                     break;
             }
         }
         
         private float GetAnimatorSpeed()
         {
-            if (isRunning)
+            switch (moveType)
             {
-                return 2f * movementDirection;
-            }
-            else
-            {
-                return movementDirection;
+                case CharacterMoveSpeedType.Standing:
+                case CharacterMoveSpeedType.Walk:
+                    return movementDirection;
+                case CharacterMoveSpeedType.Run:
+                    return 2f * movementDirection;
+                default:
+                    return 0f;
             }
         }
     }
