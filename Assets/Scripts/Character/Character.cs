@@ -45,6 +45,8 @@ namespace Game
                 // stop slide will override the velocity value even when the player does not move.
                 DoMove();
             }
+            
+            UpdateAnimation();
         }
 
         private void CalculateNewSpeed()
@@ -74,18 +76,7 @@ namespace Game
             }
         }
 
-        private float GetAnimatorSpeed()
-        {
-            if (isRunning)
-            {
-                return 2f * movementDirection;
-            }
-            else
-            {
-                return movementDirection;
-            }
-        }
-
+        
         private void DoJump()
         {
             if (!canJumpWhenNotGrounded && !isGrounded)
@@ -96,13 +87,14 @@ namespace Game
 
         private void DoMove()
         {
-           
             // move character to left or right with the specified speed
             Vector2 velocity = characterRigidBody.velocity;
             velocity.x = currentMovement.x;
             characterRigidBody.velocity = velocity;
+        }
 
-            // set animations to make a cooler character.
+        private void UpdateAnimation()
+        {
             characterAnimator.SetFloat(animationKeySpeed, Mathf.Abs(GetAnimatorSpeed()));
             characterAnimator.SetFloat(animationKeyDirection, GetAnimatorSpeed());
             // character should never fall or jump (in the animation) if the character is grounded.
@@ -111,8 +103,7 @@ namespace Game
 
         private void CheckGrounded()
         {
-            RaycastHit2D hitEvent =
-                Physics2D.Raycast(transform.position, Vector2.down, maximumGroundedHeight, groundHitLayerMask);
+            RaycastHit2D hitEvent = Physics2D.Raycast(transform.position, Vector2.down, maximumGroundedHeight, groundHitLayerMask);
             // check to zero seems to be pretty accurate and ist faster than a collider zero check.
             // if value is not exactly zero, than there will be a hit.
             if (hitEvent.distance == 0f) 
@@ -159,6 +150,18 @@ namespace Game
                 case CharacterMovementType.Run:
                     isRunning = false;
                     break;
+            }
+        }
+        
+        private float GetAnimatorSpeed()
+        {
+            if (isRunning)
+            {
+                return 2f * movementDirection;
+            }
+            else
+            {
+                return movementDirection;
             }
         }
     }
